@@ -12,6 +12,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -67,6 +68,21 @@ public class CreditCardServiceTest {
         objCardInfo.setLimit(requestDTO.getLimit());
         objCardInfo.setName(requestDTO.getName());
         verify(cardRepository,times(1)).save(objCardInfo);
+    }
+
+    @Test
+    public void getAll() throws  Exception
+    {
+        CardInfo objCardInfo = new CardInfo();
+        objCardInfo.setCardNumber(123L);
+        objCardInfo.setBalance(0L);
+        objCardInfo.setLimit(1000L);
+        objCardInfo.setName("test");
+        List<CardInfo> list= new ArrayList<>();
+        list.add(objCardInfo);
+        when(cardRepository.findAll()).thenReturn(list);
+        List<CardInfo> cardInfoList=creditCardService.getAll();
+        assertThat(cardInfoList).isNotNull();
     }
 
 

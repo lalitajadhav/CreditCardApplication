@@ -5,9 +5,11 @@ import com.example.CreditCardApplication.persistence.Model.CardInfo;
 import com.example.CreditCardApplication.requestDTO.CardRequestDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
 
@@ -15,8 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.CreditCardApplication.Utils.Constants.API_VERSION_1_0_0;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -24,6 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CreditCardControllerTest extends AbstractControllerTest {
 
     private final ObjectMapper mapper = new ObjectMapper();
+
+    private final static String TEST_USER_ID = "user-id-123";
 
     @Test
     public void saveCardInformation() throws Exception
@@ -34,8 +41,10 @@ public class CreditCardControllerTest extends AbstractControllerTest {
         requestDTO.setLimit(1000L);
 
         this.mvc.perform(MockMvcRequestBuilders.post(API_VERSION_1_0_0 + "/cards/add")
+                                               .with(user(TEST_USER_ID))
+                                               .with(csrf())
                                                .content(mapper.writeValueAsString(requestDTO)).contentType(MediaType.APPLICATION_JSON)
-                                               ).andExpect(status().isOk());
+                                               ).andExpect(status().isCreated());
 
     }
 
@@ -51,24 +60,11 @@ public class CreditCardControllerTest extends AbstractControllerTest {
         when(validationService.isValidCardNumber(requestDTO.getCardNumber())).thenReturn(false);
         doCallRealMethod().when(creditCardService).processCardInformation(requestDTO,errors);
         this.mvc.perform(MockMvcRequestBuilders.post(API_VERSION_1_0_0 + "/cards/add")
+                .with(user(TEST_USER_ID))
+                .with(csrf())
                 .content(mapper.writeValueAsString(requestDTO)).contentType(MediaType.APPLICATION_JSON)
         ).andExpect(status().isUnprocessableEntity());
 
     }
 
-    @Test
-    public  void getAll() throws  Exception
-    {
-        CardInfo objCardInfo = new CardInfo();
-        objCardInfo.setCardNumber(123L);
-        objCardInfo.setBalance(0L);
-        objCardInfo.setLimit(1000L);
-        objCardInfo.setName("test");
-        List<CardInfo> list= new ArrayList<>();
-        list.add(objCardInfo);
-        when(cardRepository.findAll()).thenReturn(list);
-        when(creditCardService.getAll()).thenReturn(list);
-        this.mvc.perform(MockMvcRequestBuilders.get(API_VERSION_1_0_0 + "/cards/getAll")
-                .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
-    }
 }

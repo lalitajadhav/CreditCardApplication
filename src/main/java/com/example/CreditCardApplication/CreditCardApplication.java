@@ -8,13 +8,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @SpringBootApplication
 @ComponentScan({"com.example.CreditCardApplication",
-		        "com.example.CreditCardApplication.service"})
+        "com.example.CreditCardApplication.service",
+        "com.example.CreditCardApplication.configuration"})
 @EnableJpaRepositories("com.example.CreditCardApplication.persistence")
 @EnableTransactionManagement
 public class CreditCardApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(CreditCardApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(CreditCardApplication.class, args);
+    }
 
 }

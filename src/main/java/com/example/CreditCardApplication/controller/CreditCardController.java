@@ -30,7 +30,7 @@ public class CreditCardController {
     @ApiOperation(value="Add Credit Card Information")
     @ApiResponses(value = {
             @ApiResponse(
-                    code = 200,
+                    code = 201,
                     message = "Credit card saved successfully"),
             @ApiResponse(
                     code = 500,
@@ -49,7 +49,7 @@ public class CreditCardController {
         if (errors.hasErrors()) {
             return new ResponseEntity(errors.getAllErrors(), HttpStatus.UNPROCESSABLE_ENTITY);
         } else {
-            return new ResponseEntity("Credit card saved successfully", HttpStatus.OK);
+            return new ResponseEntity("Credit card saved successfully", HttpStatus.CREATED);
         }
 
     }
